@@ -1,15 +1,17 @@
 import { Keyboard, Key } from 'telegram-keyboard';
 
-function variables(array) {
+function variables(arrayObjects) {
     let inlineArray = [];
 
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < arrayObjects.length; i++) {
         inlineArray.push(
             [
-                Key.callback(array[i], `variable_${array[i]}`)
+                Key.callback(`✍️ ${arrayObjects[i].name}`, `variable_${arrayObjects[i].name}`)
             ]
         );
     }
+
+    inlineArray.push([Key.callback('✅ Save ✅', `variables_save`), Key.callback('❌ Remove ❌', `variables_remove`)]);
 
     const keyboard = Keyboard.make(inlineArray).inline();
     return keyboard;

@@ -6,6 +6,8 @@ import fs from 'fs';
 class App {
     async run() {
         console.log(c.cyan(`ContractsRobot v${constants.version} by NightStranger\n`));
+        process.on('uncaughtException', err => this.onUncaughtException(err));
+
         const settings = this.loadSettings();
 
         if (!settings) {
@@ -13,6 +15,7 @@ class App {
         }
 
         const bot = new Bot(settings.token);
+        global.bot = bot;
         await bot.start();
     }
 
@@ -26,6 +29,11 @@ class App {
             console.log(c.red(e));
             return null;
         }
+    }
+
+    onUncaughtException(err) {
+        console.error('Caught exception: ', err);
+        console.error(err.stack);
     }
 }
 

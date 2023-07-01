@@ -47,18 +47,19 @@ async function onDocument(ctx) {
             });
         }
 
-        console.log(ctx.session);
-        ctx.session.document = ctx.session.document || null;
-        ctx.session.document = {
-            fileId: fileId,
-            fileLink: fileLink.href,
-            fileData: fileData,
-            documentXml: documentXml,
-            variables: variables,
-            variablesObjects: variablesObjects
+        let sessionDocument = {
+            document: {
+                fileId: fileId,
+                fileName: document.file_name,
+                fileLink: fileLink.href,
+                documentXml: documentXml,
+                variablesObjects: variablesObjects
+            }
         };
 
-        const keyboard = variablesKeyboard(variables);
+        await global.bot.saveSession(ctx, sessionDocument);
+
+        const keyboard = variablesKeyboard(variablesObjects);
         keyboard.parse_mode = 'HTML';
 
         const message = `📄 <b>Document:</b> <i>${document.file_name}</i>

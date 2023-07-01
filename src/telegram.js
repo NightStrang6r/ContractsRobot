@@ -12,11 +12,12 @@ import onUploadDocumentCommand from "./handlers/onUploadDocumentCommand.js";
 class Bot {
     constructor(token) {
         this.bot = new Telegraf(token);
+        this.localSession = new LocalSession();
+
+        global.localSession = this.localSession;
     }
 
     async start() {
-        this.bot.use((new LocalSession({ database: 'example_db.json' })).middleware());
-
         this.bot.start((ctx) => onStartCommand(ctx));
         this.bot.help((ctx) => onHelpCommand(ctx));
 
@@ -42,6 +43,23 @@ class Bot {
 
     onError(err, ctx) {
         console.log(`Telegram Bot encountered an error for ${ctx.updateType}`, err);
+    }
+
+    getSessionKey(ctx) {
+        if (ctx.from && ctx.chat) {
+            return `${ctx.from.id}:${ctx.chat.id}`
+        } else if (ctx.from && ctx.inlineQuery) {
+            return `${ctx.from.id}:${ctx.from.id}`
+        }
+        return null
+    }
+
+    async getSession(ctx) {
+        return await this.localSession.getSession(this.getSessionKey(ctx))
+    }
+
+    async saveSession(ctx, session) {
+        return await this.localSession.saveSession(this.getSessionKey(ctx), session)
     }
 }
 
