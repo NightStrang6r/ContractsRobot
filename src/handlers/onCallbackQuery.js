@@ -3,12 +3,13 @@ import onVariablesRemoveConfirm from "./onVariablesRemoveConfirm.js";
 import onVariablesRemoveCancel from "./onVariablesRemoveCancel.js";
 import onVariableEdit from "./onVariableEdit.js";
 import onCancelNewValueInput from "./onCancelNewValueInput.js";
+import onVariablesSave from "./onVariablesSave.js";
 
 async function onCallbackQuery(ctx) {
     const callbackData = ctx.update.callback_query.data;
     
     if (callbackData == 'variables_save') {
-        
+        onVariablesSave(ctx);
     } else if (callbackData == 'variables_remove') {
         onVariablesRemove(ctx);
     } else if (callbackData == 'variables_remove_cancel') {

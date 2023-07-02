@@ -40,7 +40,7 @@ async function onVariableEdit(ctx) {
         }
     });
 
-    message += 'Send new value:';
+    message += '✳️ Send new value:';
 
     await ctx.replyWithHTML(message, cancelNewValueInputKeyboard());
 }

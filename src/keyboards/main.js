@@ -2,7 +2,7 @@ import { Keyboard } from 'telegram-keyboard';
 
 function main() {
     const keyboard = Keyboard.make([
-        ['📤 Upload document 📤'],
+        ['📤 Upload document 📤', '✍️ Edit current document ✍️'],
         ['❓ Help ❓', 'ℹ️ Info ℹ️'],
     ]);
 

@@ -1,7 +1,7 @@
 import mainKeyboard from '../keyboards/main.js';
 
 const message = `<b>🔥 Contracts Robot 🔥</b>
-<b>👉 Made with ♥ by <a href="https://t.me/NightStrang6r">NightStranger</a></b>
+<b>👉 Made with ♥ by <a href="https://t.me/NightStrang6r">NightStranger</a> (<a href="https://github.com/NightStrang6r">GitHub</a>)</b>
 `;
 
 async function onInfoCommand(ctx) {

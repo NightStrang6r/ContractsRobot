@@ -1,8 +1,9 @@
 import fetch from 'node-fetch';
-import JSZip from 'jszip';
+import PizZip from 'pizzip';
+import Docxtemplater from 'docxtemplater';
 import { Buffer } from 'buffer';
 
-import variablesKeyboard from '../keyboards/variables.js';
+import sendDocumentEditMessage from '../functions/sendDocumentEditMessage.js';
 
 async function onDocument(ctx) {
     if (!ctx.message?.document) {
@@ -29,15 +30,14 @@ async function onDocument(ctx) {
         const arrayBuffer = await response.arrayBuffer();
         const fileData = Buffer.from(arrayBuffer);
 
-        const documentXml = await extractDocumentXml(fileData);
+        const variables = getVariablesFromDocx(fileData);
 
-        if (!documentXml) {
+        if (!variables) {
             await ctx.replyWithSticker('CAACAgUAAxkBAAEVt1JknWhCeUxgx87FDDfjepaj2oXcvgAC7QEAAt8fchlwAmkHffWfEC8E');
             await ctx.replyWithHTML('❌ File is empty or file format doesn\'t supported!');
             return;
         }
 
-        const variables = getVariablesFromString(documentXml);
         const variablesObjects = [];
 
         for (let i = 0; i < variables.length; i++) {
@@ -52,49 +52,45 @@ async function onDocument(ctx) {
                 fileId: fileId,
                 fileName: document.file_name,
                 fileLink: fileLink.href,
-                documentXml: documentXml,
                 variablesObjects: variablesObjects
             }
         };
 
         await global.bot.saveSession(ctx, sessionDocument);
-
-        const keyboard = variablesKeyboard(variablesObjects);
-        keyboard.parse_mode = 'HTML';
-
-        const message = `📄 <b>Document:</b> <i>${document.file_name}</i>
-⭐ Click on the variable to fill it.
-🔻 If you dont see all variables from the document, check /help.`;
-
-        await ctx.telegram.editMessageText(ctx.chat.id, processingMessage.message_id, null, message, keyboard);
+        await ctx.telegram.deleteMessage(ctx.chat.id, processingMessage.message_id);
+        await sendDocumentEditMessage(ctx);
     } catch (error) {
-        console.error(`Failed to download the document: ${error}`);
+        console.error(`Failed to process the document: ${error}`);
+        console.error(error.stack);
+        await ctx.replyWithSticker('CAACAgUAAxkBAAEVt1JknWhCeUxgx87FDDfjepaj2oXcvgAC7QEAAt8fchlwAmkHffWfEC8E');
+        await ctx.replyWithHTML('❌ Failed to process the document!');
     }
 }
 
-async function extractDocumentXml(fileData) {
-    const zip = new JSZip();
-    const docxZip = await zip.loadAsync(fileData);
-    const documentXmlFile = docxZip.file('word/document.xml');
+function getVariablesFromDocx(buffer) {
+    const zip = new PizZip(buffer);
+    const doc = new Docxtemplater().loadZip(zip);
 
-    if (!documentXmlFile) {
-        return null;
+    const usedTags = {};
+
+    doc.setOptions({
+        parser: tag => ({
+            get: scope => {
+                if (!usedTags.hasOwnProperty(tag)) {
+                    usedTags[tag] = true;
+                }
+                return scope[tag] || null;
+            }
+        })
+    });
+
+    try {
+        doc.render();
+    } catch (error) {
+
     }
 
-    const documentXmlData = await documentXmlFile.async('string');
-    return documentXmlData;
-}
-
-function getVariablesFromString(string) {
-    const regex = /\$\{(.+?)\}/g;
-    const matches = [];
-    let match;
-
-    while ((match = regex.exec(string)) !== null) {
-        matches.push(match[1]);
-    }
-
-    return matches;
+    return Object.keys(usedTags);
 }
 
 export default onDocument;

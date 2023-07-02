@@ -8,6 +8,7 @@ import onStartCommand from "./handlers/onStartCommand.js";
 import onInfoCommand from "./handlers/onInfoCommand.js";
 import onHelpCommand from "./handlers/onHelpCommand.js";
 import onUploadDocumentCommand from "./handlers/onUploadDocumentCommand.js";
+import onEditCurrentDocumentCommand from "./handlers/onEditCurrentDocumentCommand.js";
 
 class Bot {
     constructor(token) {
@@ -22,6 +23,7 @@ class Bot {
         this.bot.help((ctx) => onHelpCommand(ctx));
 
         this.bot.hears('📤 Upload document 📤', (ctx) => onUploadDocumentCommand(ctx));
+        this.bot.hears('✍️ Edit current document ✍️', (ctx) => onEditCurrentDocumentCommand(ctx));
         this.bot.hears('❓ Help ❓', (ctx) => onHelpCommand(ctx));
         this.bot.hears('ℹ️ Info ℹ️', (ctx) => onInfoCommand(ctx));
 

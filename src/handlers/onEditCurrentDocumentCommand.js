@@ -1,8 +1,7 @@
 import sendDocumentEditMessage from '../functions/sendDocumentEditMessage.js';
 
-async function onVariablesRemoveCancel(ctx) {
-    await ctx.deleteMessage();
+async function onEditCurrentDocumentCommand(ctx) {
     await sendDocumentEditMessage(ctx);
 }
 
-export default onVariablesRemoveCancel;
+export default onEditCurrentDocumentCommand;

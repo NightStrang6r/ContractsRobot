@@ -21,9 +21,15 @@ async function onVariableNewValue(ctx) {
         }
     });
 
-    let message = '✅ <b>Variable saved!</b>';
+    let message = '✅ <b>Variable saved!</b>\n\n';
+    message += 'New value: ' + ctx.message.text;
 
-    await ctx.replyWithHTML(message);
+    await ctx.deleteMessage();
+    const replyMessage = await ctx.replyWithHTML(message);
+
+    setTimeout(async () => {
+        await ctx.deleteMessage(replyMessage.message_id);
+    }, 5000);
 }
 
 export default onVariableNewValue;
