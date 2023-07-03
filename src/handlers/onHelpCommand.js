@@ -2,10 +2,13 @@ import mainKeyboard from '../keyboards/main.js';
 
 const message = `<b>❓ Help ❓</b>
 
-✔️ You can edit only 1 document at a time.
-✔️ You can add up to 100 variables to a document.
-
 🔸 Variables format: <b>{variable_name}</b>
+🔸 Download sample template: <b>/template</b>
+
+✔️ You can edit only <b>1 document</b> at a time.
+✔️ You can add up to <b>100 variables</b> to a document.
+
+💯 <b>100% private and open source</b>
 `;
 
 async function onHelpCommand(ctx) {

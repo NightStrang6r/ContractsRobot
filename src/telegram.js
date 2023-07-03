@@ -1,7 +1,9 @@
 import c from "chalk";
 import { Telegraf } from "telegraf";
+import TelegrafLogger from "telegraf-logger";
 import LocalSession from "telegraf-session-local";
 
+import log from "./log.js";
 import onMessage from "./handlers/onMessage.js";
 import onCallbackQuery from "./handlers/onCallbackQuery.js";
 import onStartCommand from "./handlers/onStartCommand.js";
@@ -9,16 +11,25 @@ import onInfoCommand from "./handlers/onInfoCommand.js";
 import onHelpCommand from "./handlers/onHelpCommand.js";
 import onUploadDocumentCommand from "./handlers/onUploadDocumentCommand.js";
 import onEditCurrentDocumentCommand from "./handlers/onEditCurrentDocumentCommand.js";
+import onTemplateCommand from "./handlers/onTemplateCommand.js";
 
 class Bot {
     constructor(token) {
         this.bot = new Telegraf(token);
         this.localSession = new LocalSession();
 
+        this.logger = new TelegrafLogger({
+            log: log,
+            format: '%ut => @%u %fn %ln (%fi): <%ust> %c',
+            contentLength: 100,
+        });
+
         global.localSession = this.localSession;
     }
 
     async start() {
+        this.bot.use(this.logger.middleware());
+
         this.bot.start((ctx) => onStartCommand(ctx));
         this.bot.help((ctx) => onHelpCommand(ctx));
 
@@ -26,6 +37,8 @@ class Bot {
         this.bot.hears('✍️ Edit current document ✍️', (ctx) => onEditCurrentDocumentCommand(ctx));
         this.bot.hears('❓ Help ❓', (ctx) => onHelpCommand(ctx));
         this.bot.hears('ℹ️ Info ℹ️', (ctx) => onInfoCommand(ctx));
+
+        this.bot.command('template', (ctx) => onTemplateCommand(ctx));
 
         this.bot.on('message', (ctx) => onMessage(ctx));
         this.bot.on('callback_query',(ctx) => onCallbackQuery(ctx));
@@ -35,16 +48,17 @@ class Bot {
         try {
             this.bot.launch();
         } catch (err) {
-            console.log(c.red('Error launching Telegram Bot.'));
-            console.log(c.red(err));
+            log('Error launching Telegram Bot.', 'r');
+            console.log(err);
             return;
         }
         
-        console.log(c.green('Telegram Bot launched.'));
+        log('Telegram Bot launched.', 'g');
     }
 
     onError(err, ctx) {
-        console.log(`Telegram Bot encountered an error for ${ctx.updateType}`, err);
+        log(`Telegram Bot encountered an error for ${ctx.updateType}`, 'r');
+        console.log(err);
     }
 
     getSessionKey(ctx) {

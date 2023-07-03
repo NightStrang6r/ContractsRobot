@@ -1,4 +1,5 @@
 import c from 'chalk';
+import log from './log.js';
 import Bot from './telegram.js';
 import constants from './constants.js';
 import fs from 'fs';
@@ -25,8 +26,8 @@ class App {
 
             return JSON.parse(settings);
         } catch (e) {
-            console.log(c.red('Error loading settings file.'));
-            console.log(c.red(e));
+            log('Error loading settings file.', 'r');
+            console.log(e);
             return null;
         }
     }

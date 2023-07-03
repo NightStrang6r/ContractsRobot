@@ -19,7 +19,7 @@ async function onVariablesSave(ctx) {
 
         const replaceObject = variablesObjects.reduce((accumulator, item) => {
             if(item.value === "" || item.value === null || item.value === undefined) {
-              accumulator[item.name] = item.name;
+              accumulator[item.name] = `{${item.name}}`;
             } else {
               accumulator[item.name] = item.value;
             }
